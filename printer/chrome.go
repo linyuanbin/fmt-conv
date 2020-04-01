@@ -9,6 +9,7 @@ import (
 	"github.com/linyuanbin/fmt-conv/xerror"
 	"github.com/linyuanbin/fmt-conv/xlog"
 	"github.com/linyuanbin/fmt-conv/xtime"
+	"github.com/mafredri/cdp/protocol/emulation"
 	"io/ioutil"
 	"strings"
 	"time"
@@ -23,9 +24,22 @@ import (
 )
 
 type chromePrinter struct {
-	logger xlog.Logger
-	url    string
-	opts   ChromePrinterOptions
+	logger  xlog.Logger
+	url     string
+	opts    ChromePrinterOptions
+	devArgs *emulation.SetDeviceMetricsOverrideArgs
+}
+
+// SetDeviceMetricsOverrideArgs represents the arguments for SetDeviceMetricsOverride in the Emulation domain.
+type SetDeviceMetricsOverrideArgs struct {
+	Width             int     `json:"width"`
+	Height            int     `json:"height"`
+	DeviceScaleFactor float64 `json:"deviceScaleFactor"`
+	Mobile            bool    `json:"mobile"`
+}
+
+func DefaultSetDeviceMetricsOverrideArgs() *emulation.SetDeviceMetricsOverrideArgs {
+	return new(emulation.SetDeviceMetricsOverrideArgs)
 }
 
 // ChromePrinterOptions helps customizing the
@@ -136,6 +150,7 @@ func (p chromePrinter) Print(destination string) error {
 		defer newContextConn.Close() // nolint: errcheck
 		// create a new CDP Client that uses newContextConn.
 		targetClient := cdp.NewClient(newContextConn)
+		targetClient.Emulation.SetDeviceMetricsOverride(context.Background(), p.devArgs)
 		/*
 			close the target when done.
 			we're not using the "default" context
