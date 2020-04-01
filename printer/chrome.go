@@ -150,7 +150,8 @@ func (p chromePrinter) Print(destination string) error {
 		defer newContextConn.Close() // nolint: errcheck
 		// create a new CDP Client that uses newContextConn.
 		targetClient := cdp.NewClient(newContextConn)
-		targetClient.Emulation.SetDeviceMetricsOverride(context.Background(), p.devArgs)
+		targetClient.Emulation.SetDeviceMetricsOverride(context.Background(), emulation.NewSetDeviceMetricsOverrideArgs(p.devArgs.Width,
+			p.devArgs.Height, 1, false))
 		/*
 			close the target when done.
 			we're not using the "default" context
