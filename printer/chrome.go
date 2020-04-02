@@ -126,6 +126,10 @@ func (p chromePrinter) Print(destination string) error {
 		createTargetArgs := target.
 			NewCreateTargetArgs("about:blank").
 			SetBrowserContextID(newContextTarget.BrowserContextID)
+
+		createTargetArgs.Height = &p.devArgs.Height
+		createTargetArgs.Width = &p.devArgs.Width
+
 		newTarget, err := devtClient.Target.CreateTarget(ctx, createTargetArgs)
 		if err != nil {
 			return err
