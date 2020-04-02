@@ -152,22 +152,15 @@ func (p chromePrinter) Print(destination string) error {
 		defer newContextConn.Close() // nolint: errcheck
 		// create a new CDP Client that uses newContextConn.
 		targetClient := cdp.NewClient(newContextConn)
-		targetClient.Emulation.SetDeviceMetricsOverride(context.Background(), emulation.NewSetDeviceMetricsOverrideArgs(p.devArgs.Width,
+		err = targetClient.Emulation.ClearDeviceMetricsOverride(ctx)
+		if err != nil {
+			return err
+		}
+		err = targetClient.Emulation.SetDeviceMetricsOverride(context.Background(), emulation.NewSetDeviceMetricsOverrideArgs(p.devArgs.Width,
 			p.devArgs.Height, 1, false))
-		layout, _ := targetClient.Page.GetLayoutMetrics(ctx)
-
-		screenshotArgs := page.NewCaptureScreenshotArgs().
-			SetFormat("png").
-			SetClip(
-				page.Viewport{
-					X:      0,
-					Y:      0,
-					Width:  layout.ContentSize.Width,
-					Height: layout.ContentSize.Height,
-					Scale:  1,
-				})
-		//screenshot, _ := targetClient.Page.CaptureScreenshot(ctx, screenshotArgs)
-		targetClient.Page.CaptureScreenshot(ctx, screenshotArgs)
+		if err != nil {
+			return err
+		}
 
 		/*
 			close the target when done.
