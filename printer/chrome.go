@@ -109,6 +109,8 @@ func (p chromePrinter) Print(destination string) error {
 		defer devtConn.Close() // nolint: errcheck
 		// create a new CDP Client that uses conn.
 		devtClient := cdp.NewClient(devtConn)
+		devtClient.Emulation.SetDeviceMetricsOverride(context.Background(), emulation.NewSetDeviceMetricsOverrideArgs(p.devArgs.Width,
+			p.devArgs.Height, 1, false))
 		newContextTarget, err := devtClient.Target.CreateBrowserContext(ctx)
 		if err != nil {
 			return err
