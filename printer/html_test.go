@@ -5,6 +5,7 @@ import (
 	"github.com/linyuanbin/fmt-conv/test"
 	"github.com/linyuanbin/fmt-conv/xerror"
 	"github.com/linyuanbin/fmt-conv/xlog"
+	"github.com/mafredri/cdp/protocol/emulation"
 	"os"
 	"testing"
 
@@ -23,7 +24,8 @@ func TestHTMLPrinter(t *testing.T) {
 	)
 	// default options.
 	opts = DefaultChromePrinterOptions(config)
-	p = NewHTMLPrinter(logger, fpath, opts)
+	args := &emulation.SetDeviceMetricsOverrideArgs{}
+	p = NewHTMLPrinter(logger, fpath, opts, args)
 	dest = test.GenerateDestination()
 	err = p.Print(dest)
 	assert.Nil(t, err)
@@ -32,7 +34,7 @@ func TestHTMLPrinter(t *testing.T) {
 	// options with a wait delay.
 	opts = DefaultChromePrinterOptions(config)
 	opts.WaitDelay = 0.5
-	p = NewHTMLPrinter(logger, fpath, opts)
+	p = NewHTMLPrinter(logger, fpath, opts,args)
 	dest = test.GenerateDestination()
 	err = p.Print(dest)
 	assert.Nil(t, err)
@@ -41,7 +43,7 @@ func TestHTMLPrinter(t *testing.T) {
 	// options with a page ranges.
 	opts = DefaultChromePrinterOptions(config)
 	opts.PageRanges = "1"
-	p = NewHTMLPrinter(logger, fpath, opts)
+	p = NewHTMLPrinter(logger, fpath, opts,args)
 	dest = test.GenerateDestination()
 	err = p.Print(dest)
 	assert.Nil(t, err)
@@ -51,7 +53,7 @@ func TestHTMLPrinter(t *testing.T) {
 	// a wrong page ranges.
 	opts = DefaultChromePrinterOptions(config)
 	opts.PageRanges = "foo"
-	p = NewHTMLPrinter(logger, fpath, opts)
+	p = NewHTMLPrinter(logger, fpath, opts,args)
 	dest = test.GenerateDestination()
 	err = p.Print(dest)
 	test.AssertError(t, err)
@@ -62,7 +64,7 @@ func TestHTMLPrinter(t *testing.T) {
 	// should timeout.
 	opts = DefaultChromePrinterOptions(config)
 	opts.WaitTimeout = 0.0
-	p = NewHTMLPrinter(logger, fpath, opts)
+	p = NewHTMLPrinter(logger, fpath, opts,args)
 	dest = test.GenerateDestination()
 	err = p.Print(dest)
 	test.AssertError(t, err)
